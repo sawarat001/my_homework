@@ -1,0 +1,193 @@
+<body>
+
+    <html>
+
+    <head>
+        <title>RockU Homework</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            const SMALLEST_UNIT = 'penny';
+
+            class USCalculator {
+
+                constructor() {
+                    this.usUnit = {
+                        '100_dollar': [100, 0, '100 dollar bill'],
+                        '50_dollar': [50, 0, '50 dollar bill'],
+                        '20_dollar': [20, 0, '20 dollar bill'],
+                        '10_dollar': [10, 0, '10 dollar bill'],
+                        '5_dollar': [5, 0, '5 dollar bill'],
+                        '1_dollar': [1, 0, '1 dollar bill'],
+                        'quater': [0.25, 0, 'quarter'],
+                        'dime': [0.1, 0, 'dime'],
+                        'nickel': [0.05, 0, 'nickey'],
+                        'penny': [0.01, 0, 'penny']
+                    };
+                    this.currentUnit = '100_dollar';
+                    this.changeSummary = '';
+                    this.returnResult = [];
+                }
+
+                /**
+                 * Get latest result of US Money
+                 */
+                getUSMoney() {
+
+                    var summary = [];
+                    var totalResult = 0;
+                    for (var key in this.usUnit) {
+                        var monkeyValue = this.usUnit[key][0];
+                        var total = this.usUnit[key][1];
+                        var label = this.usUnit[key][2];
+                        var totalLabel = '';
+                        if (total > 0) {
+                            if (total > 1) {
+                                totalLabel += total + ' ' + label + 's';
+                            } else {
+                                totalLabel += total + ' ' + label;
+                            }
+                            summary.push(totalLabel);
+                            totalResult = totalResult + (monkeyValue * total);
+                        }
+                    }
+
+                    this.changeSummary = summary.join(' ,');
+                    this.returnResult.push("Your change is  " + this.changeSummary);
+                    this.returnResult.push(totalResult);
+                    return this.returnResult;
+                }
+
+                /**
+                * Count total number of current unit.
+                */
+                countCurrentUnitTotal(p_value) {
+                    this.usUnit[this.currentUnit][1] = p_value + 1;
+                }
+
+                /**
+                 * Method to veriy the input is exactly number.
+                 * @param {p_input} input number
+                */
+                isNumber(p_input) {
+                    return !isNaN(parseFloat(p_input)) && isFinite(p_input);
+                }
+                
+                /**
+                * Method to change input number to US money.
+                * @param {input} Input number that will be changed to US money.
+                */
+                changeMoney(input) {
+                    if (!this.isNumber(input)) {
+                        $('#sp_errorMessage').text('Only number is allowed.');
+                        return;
+                    }
+
+                    input = Math.round(input * 100) / 100;
+                    var currentUnitValue = this.usUnit[this.currentUnit][0];
+                    if (input >= currentUnitValue) {
+                        var subTotal = (input - currentUnitValue) >= 0 ? (input - currentUnitValue) : input;
+                        this.countCurrentUnitTotal(this.usUnit[this.currentUnit][1]);
+                        return this.changeMoney(subTotal);
+                    } else {
+                        if (this.currentUnit != SMALLEST_UNIT) {
+                            var currentUnitIndex = Object.keys(this.usUnit).indexOf(this.currentUnit);
+                            this.currentUnit = Object.keys(this.usUnit)[currentUnitIndex + 1];
+                            return this.changeMoney(input);
+                        }
+                    }
+
+                    return this.getUSMoney();
+                }
+
+                /**
+                * Unit test method
+                * @param {int, int} input and expected result
+                */
+                testChangeMoney(input, expected) {
+                    var result = this.changeMoney(input);
+
+                    if (result && result.length > 0) {
+                        return result[1] == expected ? true : false;
+                    }
+
+                    return false;
+                }
+            }
+
+            $(function () {
+
+                $('#bt_calculate').click(function () {
+                    var input = $('#tx_input').val();
+                    if (input) {
+                        var calculator = new USCalculator();
+                        var result = calculator.changeMoney(input);
+                        $('#sp_result').text(result[0]);
+                    } else {
+                        alert('Please enter your input.');
+                    }
+                });
+
+                $('#bt_clear').click(function (e) {
+                    e.preventDefault();
+                    $('#tx_input').val('');
+                    $('#sp_errorMessage').text('');
+                    $('#sp_result').text('');
+                });
+
+                $('#bt_unitTest').click(function (e) {
+                    e.preventDefault();
+                    var calculator = new USCalculator();
+                    var input = $('#tx_input').val();
+                    var result = '';
+                    var testResult = calculator.testChangeMoney(input, input) ? 'passed' : 'failed';
+
+                    result += 'Test data = ' + input + ' is ' + testResult;
+                    $('#sp_result').text(result);
+                });
+            });
+        </script>
+
+        <style type="text/css">
+            .main-container {
+                margin-top: 50px;
+            }
+
+            .button-action {
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+
+    <div class="container main-container">
+        <div class="row">
+            <div class="col-xs-4">
+                <label class="control-label">Input </label>
+                <input class="form-control" id="tx_input">
+                <span id="sp_errorMessage" style="color: red;"></span>
+            </div>
+        </div>
+        <div class="row button-action">
+            <div class="col-xs-12">
+                <button class="btn btn-success" type="button" id="bt_calculate">Calculate</button>
+                <button class="btn btn-info" type="button" id="bt_unitTest">Run Unit test</button>
+                <button class="btn btn-warning" type="button" id="bt_clear">Clear</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <span id="sp_result"></span>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    </html>
+</body>
