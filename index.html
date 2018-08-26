@@ -1,9 +1,8 @@
 <body>
 
     <html>
-
     <head>
-        <title>RockU Homework</title>
+        <title>Homework</title>
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -15,9 +14,11 @@
 
         <script type="text/javascript">
             const SMALLEST_UNIT = 'penny';
-
+            const MULTI_PENNY = 'pennies';
             class USCalculator {
-
+                /**
+                 * Constructor
+                */
                 constructor() {
                     this.usUnit = {
                         '100_dollar': [100, 0, '100 dollar bill'],
@@ -46,13 +47,18 @@
                     for (var key in this.usUnit) {
                         var monkeyValue = this.usUnit[key][0];
                         var total = this.usUnit[key][1];
-                        var label = this.usUnit[key][2];
+                        var moneyLabel = this.usUnit[key][2];
                         var totalLabel = '';
+                        
                         if (total > 0) {
                             if (total > 1) {
-                                totalLabel += total + ' ' + label + 's';
+                                if(monkeyValue == 0.01) {
+                                    totalLabel += total + ' ' + MULTI_PENNY;
+                                } else {
+                                    totalLabel += total + ' ' + moneyLabel + 's';
+                                }
                             } else {
-                                totalLabel += total + ' ' + label;
+                                totalLabel += total + ' ' + moneyLabel;
                             }
                             summary.push(totalLabel);
                             totalResult = totalResult + (monkeyValue * total);
@@ -89,7 +95,7 @@
                         $('#sp_errorMessage').text('Only number is allowed.');
                         return;
                     }
-
+    
                     input = Math.round(input * 100) / 100;
                     var currentUnitValue = this.usUnit[this.currentUnit][0];
                     if (input >= currentUnitValue) {
