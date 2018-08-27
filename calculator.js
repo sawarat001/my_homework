@@ -108,7 +108,8 @@ const SMALLEST_UNIT = 'penny';
                     input = Math.round(input * 100) / 100;
                     expected = Math.round(expected * 100) / 100;
                     if (result && result.length > 0) {
-                        return result[1] == expected ? true : false;
+                        var testResult = Math.round(result[1] * 100) / 100;
+                        return testResult == expected ? true : false;
                     }
 
                     return false;
