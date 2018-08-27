@@ -52,6 +52,8 @@ const SMALLEST_UNIT = 'penny';
 
                     this.changeSummary = summary.join(' ,');
                     this.returnResult.push("Your change is  " + this.changeSummary);
+                    //Format total result value
+                    totalResult = Math.round(totalResult * 100) / 100;
                     this.returnResult.push(totalResult);
                     return this.returnResult;
                 }
@@ -108,8 +110,7 @@ const SMALLEST_UNIT = 'penny';
                     input = Math.round(input * 100) / 100;
                     expected = Math.round(expected * 100) / 100;
                     if (result && result.length > 0) {
-                        var testResult = Math.round(result[1] * 100) / 100;
-                        return testResult == expected ? true : false;
+                        return result[1] == expected ? true : false;
                     }
 
                     return false;
